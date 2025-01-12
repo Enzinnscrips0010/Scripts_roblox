@@ -1,0 +1,94 @@
+local aimFOV = 20 -- Default FOV
+local menuOpen = false
+local smoothingFactor = 10 -- Adjust this value for smoothing, higher values result in smoother aiming.
+ 
+local function findNearestTarget()
+    local ply = LocalPlayer()
+    local players = player.GetAll()
+    local nearestPlayer, nearestDist
+ 
+    for _, target in ipairs(players) do
+        if target ~= ply and target:Alive() and target:Health() > 0 and target:GetPos():Distance(ply:GetPos()) < 99999 then
+            local headPos = target:GetBonePosition(target:LookupBone("ValveBiped.Bip01_Head1"))
+            local dist = headPos:Distance(ply:EyePos())
+ 
+            if not nearestDist or dist < nearestDist then
+                nearestPlayer = target
+                nearestDist = dist
+            end
+        end
+    end
+ 
+    return nearestPlayer
+end
+ 
+local function aimbot()
+    if input.IsKeyDown(KEY_E) then
+        local ply = LocalPlayer()
+        local target = findNearestTarget()
+ 
+        if target then
+            local headPos = target:GetBonePosition(target:LookupBone("ValveBiped.Bip01_Head1"))
+            local viewDir = ply:EyeAngles():Forward()
+            local aimDir = (headPos - ply:EyePos()):GetNormalized()
+ 
+            local angle = math.deg(math.acos(viewDir:Dot(aimDir)))
+ 
+            if angle < aimFOV then
+                local targetAngle = (headPos - ply:GetShootPos()):Angle()
+                local currentAngle = ply:EyeAngles()
+                local smoothedAngle = LerpAngle(1 - (smoothingFactor / 100), currentAngle, targetAngle)
+                ply:SetEyeAngles(smoothedAngle)
+            end
+        end
+    end
+end
+ 
+local function toggleMenu()
+    menuOpen = not menuOpen
+ 
+    if menuOpen then
+        local frame = vgui.Create("DFrame")
+        frame:SetSize(300, 100)
+        frame:Center()
+        frame:SetTitle("Aimbot Menu")
+        frame:SetDraggable(false)
+        frame:MakePopup()
+ 
+        local slider = vgui.Create("DNumSlider", frame)
+        slider:SetPos(10, 30)
+        slider:SetSize(280, 20)
+        slider:SetText("Aimbot FOV")
+        slider:SetMin(1)
+        slider:SetMax(180)
+        slider:SetValue(aimFOV)
+        slider.OnValueChanged = function(_, val)
+            aimFOV = val
+        end
+    else
+        for _, v in ipairs(vgui.GetWorldPanel():GetChildren()) do
+            if v:GetName() == "DFrame" and v:GetTitle() == " endr's Aimbot Menu" then
+                v:Remove()
+            end
+        end
+    end
+end
+ 
+local function main()
+    hook.Add("Think", "Aimbot", aimbot)
+    hook.Add("HUDPaint", "AimbotIndicator", function()
+        local onColor = Color(0, 255, 0)
+        local offColor = Color(255, 0, 0)
+        local text = input.IsKeyDown(KEY_E) and "ON" or "OFF"
+        local color = input.IsKeyDown(KEY_E) and onColor or offColor
+        draw.SimpleText(text, "DermaDefault", ScrW() / 2, ScrH() / 2 + 20, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end)
+    hook.Add("Think", "AimbotMenu", function()
+        if input.IsKeyDown(KEY_INSERT) then
+            toggleMenu()
+            input.SelectWeapon(LocalPlayer():GetWeapon())
+        end
+    end)
+end
+ 
+main()
