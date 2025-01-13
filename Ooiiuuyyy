@@ -1,0 +1,20 @@
+'aimbot kat script"
+    aimbot-aim local Notify = AkaliNotif.Notify;
+Notify({
+           getgenv0.RecurringPoint = "UpperTorso"
+getgenvO.Hitbox= "UpperTorso" getgenvO.Keybind = "Â«'
+getgenv0).AimbotStrengthAmount= 0.10
+    
+getgenv0.PredictionAmount = 11
+getgenvO.Radius = 35
+getgenvO.UsePrediction = true
+getgenv0.AimbotStrength= true
+getgenv0.FirstPerson = true
+getgenv0.ThirdPerson = true
+getgenv0. TeamCheck = true
+getgenv0.Enabled = true
+end 
+       end  
+              end
+aim q
+end
