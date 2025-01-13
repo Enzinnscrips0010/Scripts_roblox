@@ -1,0 +1,77 @@
+local a = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local b = a:MakeWindow({Name = "\77\101\114\101\98\101\110\110\105\101\39\115\32\72\117\98", HidePremium = false, SaveConfig = true, ConfigFolder = "\79\114\105\111\110\84\101\115\116"})
+local c = b:MakeTab({Name = "\84\97\98\32\49", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local d = c:AddSection({Name = "\83\101\99\116\105\111\110"})
+a:MakeNotification({Name = "\87\101\108\99\111\109\101", Content = "\87\101\108\99\111\109\101\32\116\111\32\77\101\114\101\98\101\110\110\105\101\39\115\32\72\117\98", Image = "rbxassetid://4483345998", Time = 5})
+
+c:AddButton({Name = "\65\105\109\98\111\116\32\40\49\118\49\32\79\110\108\121\32\82\101\99\111\109\109\101\110\100\41", Callback = function()
+    local e = game:GetService("\80\108\97\121\101\114\115")
+    local f = game:GetService("\82\117\110\83\101\114\118\105\99\101")
+    local g = e.LocalPlayer
+    local h = workspace.CurrentCamera
+    local function i()
+        local j = nil
+        local k = math.huge
+        for _, l in ipairs(e:GetPlayers()) do
+            if l ~= g and l.Character and l.Character:FindFirstChild("\72\101\97\100") then
+                local m = (h.CFrame.Position - l.Character.Head.Position).magnitude
+                if m < k then
+                    k = m
+                    j = l
+                end
+            end
+        end
+        return j
+    end
+    local function n(o)
+        if o and o.Character and o.Character:FindFirstChild("\72\101\97\100") then
+            local p = o.Character.Head.Position
+            local q = (p - h.CFrame.Position).unit
+            h.CFrame = CFrame.lookAt(h.CFrame.Position, h.CFrame.Position + q)
+        end
+    end
+    local function r()
+        while true do
+            local s = i()
+            n(s)
+            wait(1)
+        end
+    end
+    f.RenderStepped:Connect(r)
+end})
+
+c:AddButton({Name = "\69\83\80", Callback = function()
+    local t = game.Players.LocalPlayer
+    local u = Color3.fromRGB(175, 25, 255)
+    local v = "\65\108\119\97\121\115\79\110\84\111\112"
+    local w = 0.5
+    local x = Color3.fromRGB(255, 255, 255)
+    local y = 0
+    local e = game:GetService("\80\108\97\121\101\114\115")
+    local z = game:GetService("\67\111\114\101\71\117\105")
+    local A = Instance.new("\70\111\108\100\101\114")
+    A.Parent = z
+    A.Name = "\72\105\103\104\108\105\103\104\116\95\83\116\111\114\97\103\101"
+
+    local function B(C)
+        if C == t then return end
+        local D = Instance.new("\72\105\103\104\108\105\103\104\116")
+        D.Name = C.Name
+        D.FillColor = u
+        D.DepthMode = v
+        D.FillTransparency = w
+        D.OutlineColor = x
+        D.OutlineTransparency = y
+        D.Parent = A
+        local E = C.Character
+        if E then D.Adornee = E end
+        C.CharacterAdded:Connect(function(F) D.Adornee = F end)
+    end
+
+    e.PlayerAdded:Connect(B)
+    for _, G in ipairs(e:GetPlayers()) do B(G) end
+    e.PlayerRemoving:Connect(function(H)
+        local I = H.Name
+        if A:FindFirstChild(I) then A[I]:Destroy() end
+    end)
+end})
